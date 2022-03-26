@@ -5,20 +5,21 @@
 #include <sys/wait.h>
 
 #include "../input_manager/manager.h"
+#include "../linked_list/linked_list.c"
 
 int main(int argc, char const *argv[])
 {
-  int is_running = 1;
+  int is_running = 1; 
   while(is_running == 1){
     printf("> ");
     char **input = read_user_input();
-    // SI INPUT ES HELLO
     if(strcmp(input[0], "hello") == 0){
       pid_t p = fork();
       if(p == 0){
-        execv("./hello", input);
+        execv("./hello", NULL);
       }
       else{
+        insertFirst(p, "hello"); 
         wait(NULL);
       }
     }
@@ -59,7 +60,7 @@ int main(int argc, char const *argv[])
     }
     // SI INPUT ES CRLIST
     else if(strcmp(input[0], "crlist") == 0){
-      continue;
+      printList();
     }
     // SI INPUT ES CREXIT
     else if(strcmp(input[0], "crexit") == 0){
