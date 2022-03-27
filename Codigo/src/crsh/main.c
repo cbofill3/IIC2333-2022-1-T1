@@ -3,12 +3,30 @@
 #include <stdlib.h>
 #include "unistd.h"
 #include <time.h>
+#include<signal.h>
 #include "../input_manager/manager.h"
 #include "../linked_list/linked_list.h"
 
+int is_running = 1; 
+
+void exit_program(){
+  time_t close_time = time(NULL);
+  interruptAll();
+  while(thereIsAnActiveProcess() && time(NULL) - close_time < 15){
+    printf("\nWaiting for processes to finish... %lds \n ", 15 - (time(NULL) - close_time));
+    sleep(1);
+  }
+  if(thereIsAnActiveProcess()){
+    printf("timeout, killing all process. :)\n");
+    terminateAll();
+  }
+  printf("All process have been terminated\n");
+  exit(0);
+}
+
 int main(int argc, char const *argv[])
 {
-  int is_running = 1; 
+  signal(SIGINT, exit_program);
   while(is_running == 1){
     char **input = read_user_input();
     if(strcmp(input[0], "hello") == 0){
@@ -48,8 +66,9 @@ int main(int argc, char const *argv[])
      printList();
     }
     else if(strcmp(input[0], "crexit") == 0){
-      continue;
+      exit_program(); 
     }
     free_user_input(input);
   }
+  return 0;
 }

@@ -1,12 +1,32 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <sys/wait.h>
-#include <sys/types.h>
 #include <time.h>
+#include <signal.h>
 #include "linked_list.h"
 
+
+int delete(pid_t pid) {
+   struct node* current = head;
+   struct node* previous = NULL;
+   if(head == NULL) {
+      return 1;
+   }
+   while(current->pid != pid) {
+      if(current->next == NULL) {
+         return 1;
+      } else {
+         previous = current;
+         current = current->next;
+      }
+   }
+   if(current == head) {
+      head = head->next;
+   } else {
+      previous->next = current->next;
+   }   
+   return 0; 
+}
 
 
 void printList() {
@@ -18,6 +38,8 @@ void printList() {
       if(end_id == 0){
          time_t end_time = time(NULL);
          printf(" %d, %s, %ld s\n", ptr->pid, ptr->command, end_time - ptr->start_time);  
+      }else{
+         delete(ptr->pid);
       }
       ptr = ptr->next;
    }
@@ -33,18 +55,31 @@ void insertFirst(pid_t pid, char *command, time_t start_time) {
    head = link;
 }
 
-struct node* find( pid_t pid) {
-
-   struct node* current = head;
-   if(head == NULL) {
-      return NULL;
-   }
-   while(current->pid != pid) {
-      if(current->next == NULL) {
-         return NULL;
-      } else {
-         current = current->next;
+int thereIsAnActiveProcess(){
+   struct node *ptr = head;
+   pid_t end_id;
+   while(ptr != NULL) {
+      end_id = waitpid(ptr->pid, NULL, WNOHANG);
+      if(end_id == 0){
+         return 1;
       }
-   }      
-   return current;
+      ptr = ptr->next;
+   }
+   return 0;
+}
+
+void interruptAll(){
+   struct node *ptr = head;
+   while(ptr != NULL) {
+      kill(ptr->pid, SIGINT);
+      ptr = ptr->next;
+   }
+}
+
+void terminateAll() {
+   struct node *ptr = head;
+   while(ptr != NULL) {
+      kill(ptr->pid, SIGKILL);
+      ptr = ptr->next;
+   }
 }
