@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "../input_manager/manager.h"
+#include <stdlib.h>
 
 int main(int argc, char **argv)
 {
