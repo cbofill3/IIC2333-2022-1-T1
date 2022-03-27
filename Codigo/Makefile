@@ -45,7 +45,7 @@ LIB=$(MTH)
 ###############################################################################
 
 # Directorios con elementos de uso común
-COMMON=input_manager
+COMMON=input_manager linked_list
 
 # Directorios que serán compilados a un programa
 PROGRAMS=crsh hello sum is_prime
