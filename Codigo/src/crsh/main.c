@@ -54,7 +54,7 @@ int main(int argc, char const *argv[])
       if( access( ("./%s", input[1]), F_OK ) == 0 ) {
         char **command = &input[1];
         pid_t p = fork();
-        insertFirst(p, "crexec", time(NULL));
+        insertFirst(p, command[0], time(NULL));
         if(p == 0){
           execv(("./%s",input[1]), command);
         }
